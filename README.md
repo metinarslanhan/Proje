@@ -1,19 +1,27 @@
-# Proje Adı
+# Renkli Eğitim Uygulaması
 
-Bu proje, temel web teknolojileri kullanılarak geliştirilmiş sade ve anlaşılır bir web çalışmasıdır.
-Amaç; kullanıcı dostu, temiz ve responsive bir arayüz sunmaktır.
+Bu proje, çocuklar için hazırlanmış web tabanlı bir eğitim ve ödev uygulamasıdır.
+Uygulama, öğrenme sürecini destekleyen sade ve anlaşılır bir yapı sunar.
 
-## 🚀 Özellikler
-- Sade ve modern tasarım
-- Mobil uyumlu (Responsive)
-- Kolay anlaşılır dosya yapısı
-- Hızlı ve hafif yapı
-- Başlangıç seviyesine uygun
+## 🎯 Amaç
+- Çocukların temel ders konularını öğrenmesini desteklemek
+- Renkli ancak dikkat dağıtmayan bir arayüz sunmak
+- Eğitim içeriklerini erişilebilir hale getirmek
+- Ödev takibini kolaylaştırmak
+
+## 🧒 Hedef Kitle
+- İlkokul ve okul öncesi öğrenciler
+- Öğretmenler
+- Veliler
+
+## ⭐ Özellikler
+- Çocuklara uygun renkli tasarım
+- Basit ve anlaşılır kullanıcı arayüzü
+- Eğitim ve ödev odaklı içerikler
+- Web tabanlı kullanım
+- Cihaz bağımsız erişim
 
 ## 🛠️ Kullanılan Teknolojiler
-- HTML5
-- CSS3
-- JavaScript (varsa)
 
 ## 📂 Proje Yapısı
 proje/
@@ -22,27 +30,25 @@ proje/
 - script.js
 - assets/
   - images/
+  - icons/
 
 ## ⚙️ Kurulum ve Kullanım
-1. Bu repoyu bilgisayarına indir:
-   git clone https://github.com/kullaniciadi/projeadi.git
+1. Proje dosyalarını bilgisayarına indir.
+2. Proje klasörü içindeki index.html dosyasını tarayıcıda aç.
+3. Uygulama kullanıma hazırdır.
 
-2. Proje klasörüne gir:
-   cd projeadi
-
-3. index.html dosyasını tarayıcıda açman yeterlidir.
-
-## 📸 Ekran Görüntüsü
-Projeye ait bir ekran görüntüsünü buraya ekleyebilirsin.
+## 📚 Eğitim Kazanımları
+- Temel ders konularını pekiştirme
+- Düzenli ödev yapma alışkanlığı kazanma
+- Dikkat ve odaklanma becerilerini geliştirme
 
 ## 🔮 Geliştirme Planları
-- Tasarım iyileştirmeleri
-- JavaScript ile etkileşim ekleme
-- Daha fazla sayfa desteği
+- Yeni ders içeriklerinin eklenmesi
+- Öğretmen ve veli kontrol paneli
+- Ödev değerlendirme sistemi
 
 ## ✍️ Geliştirici
 metinjpeg
 
 ## 📄 Lisans
-Bu proje eğitim ve kişisel kullanım amaçlıdır.
-
+Bu proje eğitim ve ödev amaçlı olarak geliştirilmiştir.
