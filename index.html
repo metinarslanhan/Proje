@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grow Step Kids - Ultimate Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Renk Paleti: Rüya Modu */
+            --bg-top: #ffdde1;
+            --bg-mid: #ee9ca7;
+            --bg-bot: #a7c5eb;
+
+            --panel-bg: rgba(255, 255, 255, 0.98);
+            --primary: #FF9F43;
+            --secondary: #54a0ff;
+            --green: #2ecc71;
+            --red: #ff7675;
+            --text: #2d3436;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(180deg, var(--bg-top), var(--bg-mid), var(--bg-bot));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            user-select: none;
+        }
+
+        /* --- 🎆 KONFETİ (En Üst Katman) --- */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999999;
+        }
+
+        /* --- ☁️ UZUN HAP BULUTLAR (Arka Plan) --- */
+        .sky-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 100px;
+            /* Tam yuvarlatılmış köşeler (Hap şekli) */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            animation: floatRight linear infinite;
+        }
+
+        @keyframes floatRight {
+            from {
+                transform: translateX(-400px);
+            }
+
+            to {
+                transform: translateX(120vw);
+            }
+        }
+
+        /* --- 🌱 SAHNE ALANI --- */
+        .stage {
+            flex-grow: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            padding-bottom: 120px;
+            pointer-events: none;
+        }
+
+        .plant-avatar {
+            font-size: 180px;
+            filter: drop-shadow(0 25px 30px rgba(0, 0, 0, 0.2));
+            animation: breathe 4s ease-in-out infinite;
+            transition: transform 0.3s;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .plant-avatar:hover {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05) translateY(-10px);
+            }
+        }
+
+        /* Seviye Rozeti (Sadece Öğrencide Görünür) */
+        .level-tag {
+            background: #fff;
+            padding: 10px 30px;
+            border-radius: 50px;
+            color: #555;
+            font-weight: 700;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            pointer-events: auto;
+            font-size: 18px;
+        }
+
+        /* --- 🍬 MARŞMELOV PANEL --- */
+        .ui-panel {
+            position: relative;
+            z-index: 100;
+            width: 90%;
+            max-width: 480px;
+            background: var(--panel-bg);
+            border-radius: 40px;
+            padding: 35px;
+
+            /* Puf Efekti */
+            border: 8px solid #ffffff;
+            box-shadow:
+                inset 0 0 30px rgba(255, 255, 255, 0.5),
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                0 0 0 4px rgba(255, 255, 255, 0.6);
+
+            max-height: 75vh;
+            overflow-y: auto;
+            transform: translateY(-30px);
+            transition: transform 0.3s;
+        }
+
+        /* ELEMENTLER */
+        h1 {
+            color: #6c5ce7;
+            margin: 0 0 10px 0;
+            font-size: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: var(--text);
+            margin: 10px 0;
+        }
+
+        p.sub {
+            text-align: center;
+            color: #a29bfe;
+            margin-bottom: 20px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 3px solid #dfe6e9;
+            border-radius: 20px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            background: #fdfdfd;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+            color: var(--text);
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--secondary);
+            background: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 22px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            transition: transform 0.1s;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .b-blue {
+            background: var(--secondary);
+        }
+
+        .b-orange {
+            background: var(--primary);
+        }
+
+        .b-green {
+            background: var(--green);
+        }
+
+        .b-red {
+            background: var(--red);
+        }
+
+        .card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border-left: 8px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .card.done {
+            border-left-color: var(--green);
+            background: #f0fff4;
+            opacity: 0.8;
+        }
+
+        /* YÜKLEME KUTUSU */
+        .upload-box {
+            border: 3px dashed #b2bec3;
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #636e72;
+            margin-top: 10px;
+            background: #f7f9fa;
+            transition: 0.3s;
+        }
+
+        .upload-box:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            background: #e3f2fd;
+        }
+
+        .preview {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-top: 10px;
+            display: none;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-preview {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 10px;
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .file-preview .file-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .file-preview .file-name {
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .big-preview {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .big-preview:hover {
+            transform: scale(1.08);
+        }
+
+        #rev-img-box {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        /* Modal/Lightbox için stil */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 999999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s;
+        }
+
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.3s;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000000;
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .image-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            color: #b2bec3;
+            font-weight: bold;
+        }
+
+        /* ÇIKIŞ BUTONU (En üstte sabit) */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn {
+            background: #ff7675;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Fredoka';
+            font-size: 14px;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 9999;
+            /* Kesinlikle en üstte */
+        }
+
+        .logout-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: #2ecc71;
+            z-index: 2;
+            border-radius: 50% 50% 0 0 / 30px 30px 0 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Görsel Modal -->
+    <div id="image-modal" class="image-modal" onclick="closeImageModal()">
+        <span class="image-modal-close" onclick="event.stopPropagation(); closeImageModal()">&times;</span>
+        <img id="modal-image" class="image-modal-content" onclick="event.stopPropagation()">
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div id="sky" class="sky-layer"></div>
+
+    <div class="stage">
+        <div id="plant" class="plant-avatar">🌱</div>
+        <div id="level-display" class="level-tag hidden">Seviye: <span id="lvl-txt">1</span></div>
+    </div>
+
+    <div class="ui-panel">
+
+        <div id="view-login">
+            <h1>Grow Step Kids 🍭</h1>
+            <p class="sub">Eğlenceli öğrenme dünyası!</p>
+
+            <div id="mode-select">
+                <button class="btn b-blue" onclick="setMode('student')">🎒 Ben Öğrenciyim</button>
+                <button class="btn b-red" onclick="setMode('teacher')">🔒 Yönetici Girişi</button>
+            </div>
+
+            <!-- Giriş / Kayıt Seçimi -->
+            <div id="auth-choice" class="hidden">
+                <div style="display:flex; gap:10px; margin-bottom:15px;">
+                    <button class="btn b-green" onclick="showAuthForm('login')" style="flex:1;">🚀 Giriş Yap</button>
+                    <button class="btn b-orange" onclick="showAuthForm('register')" style="flex:1;">📝 Kayıt Ol</button>
+                </div>
+                <div class="back-link" onclick="resetMode()">← Geri Dön</div>
+            </div>
+
+            <!-- Giriş Formu -->
+            <div id="login-form" class="hidden">
+                <input type="text" id="inp-name" placeholder="Adın ne?">
+                <input type="text" id="inp-surname" placeholder="Soyadın ne?">
+                <input type="password" id="inp-pass" placeholder="🔑 Şifre">
+                <button class="btn b-green" onclick="doLogin()">Giriş Yap 🚀</button>
+                <div class="back-link" onclick="showAuthChoice()">← Geri Dön</div>
+            </div>
+
+            <!-- Kayıt Formu -->
+            <div id="register-form" class="hidden">
+                <input type="text" id="reg-name" placeholder="Adın ne?">
+                <input type="text" id="reg-surname" placeholder="Soyadın ne?">
+                <select id="reg-branch" style="display:none;">
+                    <option value="">📚 Şube Seç</option>
+                    <option value="1-A">1-A Şubesi</option>
+                    <option value="1-B">1-B Şubesi</option>
+                    <option value="1-C">1-C Şubesi</option>
+                    <option value="2-A">2-A Şubesi</option>
+                    <option value="2-B">2-B Şubesi</option>
+                    <option value="2-C">2-C Şubesi</option>
+                    <option value="3-A">3-A Şubesi</option>
+                    <option value="3-B">3-B Şubesi</option>
+                    <option value="3-C">3-C Şubesi</option>
+                    <option value="4-A">4-A Şubesi</option>
+                    <option value="4-B">4-B Şubesi</option>
+                    <option value="4-C">4-C Şubesi</option>
+                </select>
+                <input type="password" id="reg-pass" placeholder="🔑 Şifre Belirle">
+                <input type="password" id="reg-pass2" placeholder="🔑 Şifre Tekrar">
+                <button class="btn b-orange" onclick="doRegister()">Kayıt Ol 🎉</button>
+                <div class="back-link" onclick="showAuthChoice()">← Geri Dön</div>
+            </div>
+        </div>
+
+        <div id="view-teacher" class="hidden">
+            <div class="header-row">
+                <h2 style="margin:0;">🔒 Yönetici</h2>
+                <button class="logout-btn" onclick="doLogout()">Çıkış</button>
+            </div>
+
+            <div id="tc-main">
+                <div style="background:#fff8e1; padding:20px; border-radius:25px; border: 2px dashed #ffeaa7;">
+                    <h3 style="margin-top:0; color:#ff9f43;">✨ Yeni Görev Ekle</h3>
+                    <input type="text" id="tc-title" placeholder="Başlık">
+                    <textarea id="tc-desc" rows="2" placeholder="Açıklama..."></textarea>
+
+                    <select id="tc-branch" style="margin-bottom:12px;">
+                        <option value="ALL">📢 Tüm Şubelere Gönder</option>
+                        <option value="1-A">1-A Şubesine</option>
+                        <option value="1-B">1-B Şubesine</option>
+                        <option value="1-C">1-C Şubesine</option>
+                        <option value="2-A">2-A Şubesine</option>
+                        <option value="2-B">2-B Şubesine</option>
+                        <option value="2-C">2-C Şubesine</option>
+                        <option value="3-A">3-A Şubesine</option>
+                        <option value="3-B">3-B Şubesine</option>
+                        <option value="3-C">3-C Şubesine</option>
+                        <option value="4-A">4-A Şubesine</option>
+                        <option value="4-B">4-B Şubesine</option>
+                        <option value="4-C">4-C Şubesine</option>
+                    </select>
+
+                    <div class="upload-box" onclick="document.getElementById('tc-file').click()">
+                        📷 Görsel veya 📎 Dosya Ekle
+                        <div style="font-size:11px; color:#999; margin-top:5px;">Görsel, PDF, Word, Excel</div>
+                        <input type="file" id="tc-file" class="hidden" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                            onchange="previewFile(this, 'tc-pre', 'tc-file-pre')">
+                    </div>
+                    <img id="tc-pre" class="preview">
+                    <div id="tc-file-pre" class="file-preview"></div>
+
+                    <button class="btn b-orange" onclick="addTask()">Görevi Yayınla 📢</button>
+                </div>
+
+                <div style="margin-top:20px; display:flex; gap:10px;">
+                    <button class="btn b-blue" onclick="renderTeacher('tasks')"
+                        style="font-size:14px;">Görevler</button>
+                    <button class="btn b-green" onclick="renderTeacher('subs')" style="font-size:14px;">Ödevler</button>
+                </div>
+                <div id="teacher-list" style="margin-top:15px;"></div>
+            </div>
+
+            <div id="tc-review" class="hidden">
+                <div class="back-link" onclick="closeReview()" style="text-align:left; margin-bottom:10px;">← Listeye
+                    Dön</div>
+                <div style="background:#fff; border-radius:20px; padding:20px; border:2px solid #f0f0f0;">
+                    <h2 id="rev-student" style="color:#54a0ff; margin-top:0;"></h2>
+                    <p id="rev-task" style="color:#888; font-size:14px;"></p>
+                    <div style="background:#f9f9f9; padding:15px; border-radius:15px; margin-top:10px;">
+                        <strong>Öğrenci Cevabı:</strong>
+                        <p id="rev-ans" style="color:#333; margin-top:5px;"></p>
+                    </div>
+                    <div id="rev-img-box"></div>
+                </div>
+                <button class="btn b-green" onclick="approveReview()">✅ Onayla ve Puan Ver</button>
+            </div>
+        </div>
+
+        <div id="view-student" class="hidden">
+            <div class="header-row">
+                <h2 id="st-name" style="margin:0;">Öğrenci</h2>
+                <button class="logout-btn" onclick="doLogout()">Çıkış</button>
+            </div>
+
+            <div style="background:#e0f7fa; padding:15px; border-radius:20px; margin-bottom:20px; text-align:center;">
+                <span style="color:#00b894; font-weight:bold;">Puanın: <span id="st-score"
+                        style="font-size:28px;">0</span></span>
+            </div>
+
+            <div id="st-list-view">
+                <h3>📌 Görevlerin</h3>
+                <div id="st-task-list"></div>
+            </div>
+
+            <div id="st-detail-view" class="hidden">
+                <div class="back-link" onclick="closeDetail()" style="text-align:left; margin-bottom:10px;">← Geri</div>
+
+                <div style="background:#fff; border-radius:20px; padding:20px; border:2px solid #f0f0f0;">
+                    <h2 id="v-title" style="color:#0984e3; margin-top:0;"></h2>
+                    <p id="v-desc" style="color:#555;"></p>
+                    <div id="v-file-area"></div>
+                </div>
+
+                <div
+                    style="margin-top:20px; background:#f9fff9; padding:20px; border-radius:20px; border:2px dashed #00b894;">
+                    <h3 style="margin-top:0; color:#00b894;">✏️ Cevapla</h3>
+                    <textarea id="ans-text" rows="3" placeholder="Buraya yaz..."></textarea>
+
+                    <div class="upload-box" onclick="document.getElementById('ans-file').click()">
+                        📷 Görsel veya 📎 Dosya Ekle
+                        <div style="font-size:11px; color:#999; margin-top:5px;">Görsel, PDF, Word, Excel</div>
+                        <input type="file" id="ans-file" class="hidden" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
+                            onchange="previewFile(this, 'ans-pre', 'ans-file-pre')">
+                    </div>
+                    <img id="ans-pre" class="preview">
+                    <div id="ans-file-pre" class="file-preview"></div>
+
+                    <button class="btn b-green" onclick="submitTask()">🎉 Ödevi Gönder</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="ground"></div>
+
+    <script>
+        // --- 💾 DATABASE ---
+        const DB_KEY = 'GS_ZERO_RESTART';
+        let db = JSON.parse(localStorage.getItem(DB_KEY)) || { tasks: [], subs: [], scores: {}, users: [] };
+        let currentUser = null;
+        let activeTaskId = null;
+        let activeReviewId = null;
+        let currentTeacherView = 'tasks';
+
+        // --- 🎆 KONFETİ ---
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        function createConfetti() {
+            for (let i = 0; i < 150; i++) {
+                particles.push({ x: innerWidth / 2, y: innerHeight / 2, vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20, color: `hsl(${Math.random() * 360},100%,50%)`, size: Math.random() * 8 + 4, life: 100 });
+            }
+        }
+        function updateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.life--; p.size *= 0.96;
+                ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+            if (particles.length > 0) requestAnimationFrame(updateConfetti);
+        }
+        function boom() { createConfetti(); updateConfetti(); }
+
+        // --- ☁️ UZUN BULUT MOTORU ---
+        function initSky() {
+            const sky = document.getElementById('sky');
+            for (let i = 0; i < 15; i++) {
+                let c = document.createElement('div');
+                c.className = 'cloud';
+                // Rastgele genişlik ve yükseklik
+                let w = Math.random() * 200 + 100;
+                let h = Math.random() * 40 + 30;
+                c.style.width = w + 'px';
+                c.style.height = h + 'px';
+                c.style.top = Math.random() * 70 + '%';
+                c.style.opacity = Math.random() * 0.5 + 0.3;
+                c.style.animationDuration = (Math.random() * 40 + 20) + 's';
+                c.style.animationDelay = -(Math.random() * 50) + 's';
+                sky.appendChild(c);
+            }
+        }
+        initSky();
+
+        // --- EVRİM TABLOSU ---
+        const STAGES = [{ xp: 0, e: '🌱' }, { xp: 20, e: '🌿' }, { xp: 50, e: '🌷' }, { xp: 100, e: '🌻' }, { xp: 200, e: '🌳' }, { xp: 500, e: '🏰' }];
+
+        // --- 🔐 GİRİŞ VE KAYIT YÖNETİMİ ---
+        function setMode(role) {
+            document.getElementById('mode-select').classList.add('hidden');
+            document.getElementById('auth-choice').classList.remove('hidden');
+            currentUser = { role: role };
+        }
+
+        function showAuthChoice() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('auth-choice').classList.remove('hidden');
+            clearForms();
+        }
+
+        function showAuthForm(type) {
+            document.getElementById('auth-choice').classList.add('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+
+            if (type === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                // Öğrenci için soyad göster, öğretmen için gizle
+                document.getElementById('inp-surname').classList.toggle('hidden', currentUser.role === 'teacher');
+            } else {
+                document.getElementById('register-form').classList.remove('hidden');
+                // Öğrenci için şube seçimi ve soyad göster
+                document.getElementById('reg-branch').style.display = currentUser.role === 'student' ? 'block' : 'none';
+                document.getElementById('reg-surname').classList.toggle('hidden', currentUser.role === 'teacher');
+            }
+        }
+
+        function resetMode() {
+            document.getElementById('auth-choice').classList.add('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('mode-select').classList.remove('hidden');
+            clearForms();
+            currentUser = null;
+        }
+
+        function clearForms() {
+            document.getElementById('inp-name').value = "";
+            document.getElementById('inp-surname').value = "";
+            document.getElementById('inp-pass').value = "";
+            document.getElementById('reg-name').value = "";
+            document.getElementById('reg-surname').value = "";
+            document.getElementById('reg-branch').value = "";
+            document.getElementById('reg-pass').value = "";
+            document.getElementById('reg-pass2').value = "";
+        }
+
+        function doRegister() {
+            let name = document.getElementById('reg-name').value.trim();
+            let surname = document.getElementById('reg-surname').value.trim();
+            let branch = document.getElementById('reg-branch').value;
+            let pass = document.getElementById('reg-pass').value;
+            let pass2 = document.getElementById('reg-pass2').value;
+
+            if (!name) return alert("Ad gerekli!");
+            if (currentUser.role === 'student' && !surname) return alert("Soyad gerekli!");
+            if (currentUser.role === 'student' && !branch) return alert("Şube seçmelisin!");
+            if (!pass || pass.length < 3) return alert("Şifre en az 3 karakter olmalı!");
+            if (pass !== pass2) return alert("Şifreler eşleşmiyor!");
+
+            // Kullanıcı adı: Öğrenci için Ad Soyad, Öğretmen için Ad (Yönetici)
+            let userId = currentUser.role === 'student'
+                ? `${name} ${surname}`
+                : `${name} (Yönetici)`;
+
+            // Daha önce kayıtlı mı kontrol et
+            let existing = db.users.find(u => u.id.toLowerCase() === userId.toLowerCase());
+            if (existing) return alert("⛔ Bu isimle zaten kayıtlı kullanıcı var!");
+
+            // Yeni kullanıcı ekle
+            db.users.push({
+                id: userId,
+                name: name,
+                surname: surname,
+                role: currentUser.role,
+                branch: currentUser.role === 'student' ? branch : null,
+                password: pass
+            });
+            saveDB();
+
+            alert("🎉 Kayıt başarılı! Şimdi giriş yapabilirsin.");
+            showAuthForm('login');
+            document.getElementById('inp-name').value = name;
+            document.getElementById('inp-surname').value = surname;
+        }
+
+        function doLogin() {
+            let name = document.getElementById('inp-name').value.trim();
+            let surname = currentUser.role === 'student'
+                ? document.getElementById('inp-surname').value.trim()
+                : '';
+            let pass = document.getElementById('inp-pass').value;
+
+            if (!name) return alert("İsim yazmalısın!");
+            if (currentUser.role === 'student' && !surname) return alert("Soyad yazmalısın!");
+
+            // Kullanıcıyı bul: Öğrenci için Ad Soyad, Öğretmen için Ad (Yönetici)
+            let userId = currentUser.role === 'student'
+                ? `${name} ${surname}`
+                : `${name} (Yönetici)`;
+
+            let user = db.users.find(u => u.id.toLowerCase() === userId.toLowerCase() && u.role === currentUser.role);
+
+            if (!user) return alert("⛔ Kayıtlı kullanıcı bulunamadı! Önce kayıt olmalısın.");
+            if (user.password !== pass) return alert("⛔ Hatalı şifre!");
+
+            // Giriş başarılı
+            currentUser = { ...user };
+
+            if (currentUser.role === 'teacher') {
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-teacher').classList.remove('hidden');
+                document.getElementById('level-display').classList.add('hidden');
+                renderTeacher('tasks');
+            } else {
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-student').classList.remove('hidden');
+                document.getElementById('level-display').classList.remove('hidden');
+                document.getElementById('st-name').innerHTML = `${currentUser.id} <span style="font-size:14px; color:#00b894;">(${currentUser.branch})</span>`;
+                renderStudent();
+            }
+        }
+
+        function doLogout() { location.reload(); }
+
+        // --- 📁 RESİM SIKIŞTIRMA VE DOSYA ÖNİZLEME ---
+        function preview(inp, imgId) {
+            if (inp.files && inp.files[0]) {
+                const file = inp.files[0];
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const MAX = 800;
+                        let w = img.width; let h = img.height;
+                        if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                        canvas.width = w; canvas.height = h;
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const imgElement = document.getElementById(imgId);
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        imgElement.src = dataUrl;
+                        imgElement.style.display = 'block';
+                        imgElement.style.cursor = 'pointer';
+                        imgElement.onclick = () => openImageModal(dataUrl);
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Dosya tipi ikonları
+        function getFileIcon(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📄',
+                'doc': '📝',
+                'docx': '📝',
+                'xls': '📊',
+                'xlsx': '📊'
+            };
+            return icons[ext] || '📎';
+        }
+
+        // Görsel veya dosya önizleme
+        function previewFile(inp, imgId, filePreviewId) {
+            const imgElement = document.getElementById(imgId);
+            const filePreview = document.getElementById(filePreviewId);
+
+            // Her ikisini de gizle
+            imgElement.style.display = 'none';
+            filePreview.style.display = 'none';
+
+            if (inp.files && inp.files[0]) {
+                const file = inp.files[0];
+                const isImage = file.type.startsWith('image/');
+
+                if (isImage) {
+                    // Görsel ise sıkıştırıp göster
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const img = new Image();
+                        img.src = e.target.result;
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const MAX = 800;
+                            let w = img.width; let h = img.height;
+                            if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                            canvas.width = w; canvas.height = h;
+                            ctx.drawImage(img, 0, 0, w, h);
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                            imgElement.src = dataUrl;
+                            imgElement.style.display = 'block';
+                            imgElement.style.cursor = 'pointer';
+                            imgElement.onclick = () => openImageModal(dataUrl);
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    // Dosya ise icon ve isim göster
+                    const icon = getFileIcon(file.name);
+                    filePreview.innerHTML = `
+                        <div class="file-icon">${icon}</div>
+                        <div class="file-name">${file.name}</div>
+                        <div style="font-size:11px; margin-top:5px; opacity:0.8;">${(file.size / 1024).toFixed(1)} KB</div>
+                    `;
+                    filePreview.style.display = 'block';
+
+                    // Dosyayı base64 olarak sakla
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        filePreview.dataset.fileData = JSON.stringify({
+                            name: file.name,
+                            type: file.type,
+                            data: e.target.result
+                        });
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // --- 🎓 YÖNETİCİ ---
+        function addTask() {
+            let t = document.getElementById('tc-title').value;
+            let d = document.getElementById('tc-desc').value;
+            let branch = document.getElementById('tc-branch').value;
+            let img = document.getElementById('tc-pre').src;
+            let filePreview = document.getElementById('tc-file-pre');
+            if (!t) return alert("Başlık gerekli!");
+
+            // Görsel veya dosya verisi al
+            let fData = null;
+            if (img && img.includes('data:')) {
+                fData = { type: 'image', data: img };
+            } else if (filePreview.dataset.fileData) {
+                fData = JSON.parse(filePreview.dataset.fileData);
+                fData.type = 'file';
+            }
+
+            try {
+                db.tasks.push({ id: Date.now(), title: t, desc: d, file: fData, branch: branch });
+                saveDB();
+                let branchText = branch === 'ALL' ? 'Tüm Şubelere' : `${branch} Şubesine`;
+                alert(`Görev ${branchText} Yayınlandı! 🎉`);
+                document.getElementById('tc-title').value = "";
+                document.getElementById('tc-desc').value = "";
+                document.getElementById('tc-branch').value = "ALL";
+                document.getElementById('tc-pre').src = "";
+                document.getElementById('tc-pre').style.display = "none";
+                filePreview.innerHTML = "";
+                filePreview.style.display = "none";
+                delete filePreview.dataset.fileData;
+                renderTeacher('tasks');
+            } catch (e) { alert("Hafıza Doldu!"); }
+        }
+
+        function renderTeacher(view) {
+            currentTeacherView = view;
+            let box = document.getElementById('teacher-list');
+            box.innerHTML = "";
+            if (view === 'tasks') {
+                let list = db.tasks.slice().reverse();
+                if (list.length === 0) box.innerHTML = "<div style='text-align:center;color:#999;'>Görev yok.</div>";
+                list.forEach(t => {
+                    let branchText = t.branch === 'ALL' ? '📢 Herkese' : `📚 ${t.branch}`;
+                    let d = document.createElement('div'); d.className = 'card';
+                    d.innerHTML = `<b>${t.title}</b> <span style="font-size:12px;color:#00b894;">${branchText}</span> <button onclick="delTask(${t.id})" style="float:right;background:#ff7675;color:white;border:none;border-radius:5px;padding:5px;">Sil</button>`;
+                    box.appendChild(d);
+                });
+            } else {
+                let list = db.subs.filter(s => s.status === 'WAITING');
+                if (list.length === 0) box.innerHTML = "<div style='text-align:center;color:#999;'>Bekleyen ödev yok.</div>";
+                list.forEach(s => {
+                    let user = db.users.find(u => u.id === s.student);
+                    let branchInfo = user ? ` (${user.branch})` : '';
+                    let d = document.createElement('div'); d.className = 'card';
+                    d.innerHTML = `<b>${s.student}</b><span style="font-size:12px;color:#00b894;">${branchInfo}</span><br><small>Gönderdi</small> <button onclick="openReview(${s.id})" style="float:right;background:#54a0ff;color:white;border:none;border-radius:5px;padding:5px;">🔍 İncele</button>`;
+                    box.appendChild(d);
+                });
+            }
+        }
+
+        function delTask(id) { if (confirm("Silinsin mi?")) { db.tasks = db.tasks.filter(t => t.id !== id); saveDB(); renderTeacher('tasks'); } }
+
+        function openReview(sid) {
+            const sub = db.subs.find(s => s.id === sid);
+            if (!sub) return;
+            activeReviewId = sid;
+            const task = db.tasks.find(t => t.id === sub.taskId);
+
+            document.getElementById('tc-main').classList.add('hidden');
+            document.getElementById('tc-review').classList.remove('hidden');
+
+            document.getElementById('rev-student').innerText = sub.student;
+            document.getElementById('rev-task').innerText = "Görev: " + (task ? task.title : 'Silinmiş');
+            document.getElementById('rev-ans').innerText = sub.answer || "(Metin yok)";
+
+            const revImgBox = document.getElementById('rev-img-box');
+            if (sub.file) {
+                if (sub.file.type === 'image') {
+                    revImgBox.innerHTML = `<img src="${sub.file.data}" class="big-preview" onclick="openImageModal('${sub.file.data}')">`;
+                } else if (sub.file.type === 'file') {
+                    const icon = getFileIcon(sub.file.name);
+                    revImgBox.innerHTML = `
+                        <div class="file-preview" style="display:block; margin: 20px auto; max-width: 300px;">
+                            <div class="file-icon">${icon}</div>
+                            <div class="file-name">${sub.file.name}</div>
+                            <a href="${sub.file.data}" download="${sub.file.name}" 
+                               style="display:inline-block; margin-top:10px; background:white; color:#667eea; padding:8px 16px; border-radius:10px; text-decoration:none; font-weight:bold;">
+                               ⬇️ İndir
+                            </a>
+                        </div>
+                    `;
+                }
+            } else {
+                revImgBox.innerHTML = "<p style='text-align:center;color:#aaa;'>Görsel/Dosya yok</p>";
+            }
+        }
+
+        function closeReview() {
+            document.getElementById('tc-review').classList.add('hidden');
+            document.getElementById('tc-main').classList.remove('hidden');
+        }
+
+        function approveReview() {
+            const sub = db.subs.find(s => s.id === activeReviewId);
+            if (sub) {
+                sub.status = 'DONE';
+                db.scores[sub.student] = (db.scores[sub.student] || 0) + 20;
+                saveDB();
+                alert("Puan Verildi! ⭐");
+                closeReview();
+                renderTeacher('subs');
+            }
+        }
+
+        // --- 🎒 ÖĞRENCİ ---
+        function renderStudent() {
+            let pts = db.scores[currentUser.id] || 0;
+            document.getElementById('st-score').innerText = pts;
+            let emo = '🌱'; for (let st of STAGES) if (pts >= st.xp) emo = st.e;
+
+            const plant = document.getElementById('plant');
+            if (plant.innerText !== emo) {
+                plant.innerText = emo;
+                plant.animate([{ transform: 'scale(0.5)' }, { transform: 'scale(1.2)' }, { transform: 'scale(1)' }], { duration: 500 });
+            } else plant.innerText = emo;
+
+            document.getElementById('lvl-txt').innerText = Math.floor(pts / 20) + 1;
+
+            let box = document.getElementById('st-task-list'); box.innerHTML = "";
+
+            // Şube bazlı filtreleme: Kendi şubesine veya herkese gönderilen görevler
+            let list = db.tasks.filter(t => t.branch === 'ALL' || t.branch === currentUser.branch);
+
+            if (list.length === 0) box.innerHTML = "<div style='text-align:center;color:#999; margin-top:20px;'>Henüz görev yok.</div>";
+
+            list.forEach(t => {
+                let sub = db.subs.find(s => s.taskId === t.id && s.student === currentUser.id);
+                let done = sub && sub.status === 'DONE';
+                let wait = sub && sub.status === 'WAITING';
+                let div = document.createElement('div'); div.className = "card" + (done ? " done" : "");
+
+                let badge = done ? "✅ Bitti" : (wait ? "⏳ Bekliyor" : "⭕ Yap");
+                div.innerHTML = `<b>${t.title}</b> <span style="float:right;">${badge}</span>`;
+
+                if (!done && !wait) div.onclick = () => openTask(t);
+                box.appendChild(div);
+            });
+        }
+
+        function openTask(t) {
+            activeTaskId = t.id;
+            document.getElementById('st-list-view').classList.add('hidden');
+            document.getElementById('st-detail-view').classList.remove('hidden');
+            document.getElementById('v-title').innerText = t.title;
+            document.getElementById('v-desc').innerText = t.desc;
+
+            const vFileArea = document.getElementById('v-file-area');
+            if (t.file) {
+                if (t.file.type === 'image') {
+                    vFileArea.innerHTML = `<img src="${t.file.data}" style="width:100%; border-radius:10px; margin-top:10px; cursor:pointer;" onclick="openImageModal('${t.file.data}')">`;
+                } else if (t.file.type === 'file') {
+                    const icon = getFileIcon(t.file.name);
+                    vFileArea.innerHTML = `
+                        <div class="file-preview" style="display:block; margin-top:15px;">
+                            <div class="file-icon">${icon}</div>
+                            <div class="file-name">${t.file.name}</div>
+                            <a href="${t.file.data}" download="${t.file.name}" 
+                               style="display:inline-block; margin-top:10px; background:white; color:#667eea; padding:8px 16px; border-radius:10px; text-decoration:none; font-weight:bold;">
+                               ⬇️ İndir
+                            </a>
+                        </div>
+                    `;
+                }
+            } else {
+                vFileArea.innerHTML = '';
+            }
+        }
+
+        function closeDetail() {
+            document.getElementById('st-detail-view').classList.add('hidden');
+            document.getElementById('st-list-view').classList.remove('hidden');
+            document.getElementById('ans-text').value = "";
+            document.getElementById('ans-pre').src = "";
+            document.getElementById('ans-pre').style.display = "none";
+            let ansFilePreview = document.getElementById('ans-file-pre');
+            ansFilePreview.innerHTML = "";
+            ansFilePreview.style.display = "none";
+            delete ansFilePreview.dataset.fileData;
+        }
+
+        function submitTask() {
+            let ans = document.getElementById('ans-text').value;
+            let img = document.getElementById('ans-pre').src;
+            let filePreview = document.getElementById('ans-file-pre');
+
+            // Görsel veya dosya verisi al
+            let fData = null;
+            if (img && img.includes('data:')) {
+                fData = { type: 'image', data: img };
+            } else if (filePreview.dataset.fileData) {
+                fData = JSON.parse(filePreview.dataset.fileData);
+                fData.type = 'file';
+            }
+
+            if (!ans && !fData) return alert("Boş gönderme!");
+
+            try {
+                db.subs.push({ id: Date.now(), taskId: activeTaskId, student: currentUser.id, answer: ans, file: fData, status: 'WAITING' });
+                saveDB();
+                boom();
+                setTimeout(() => { alert("Gönderildi! 🚀"); closeDetail(); renderStudent(); }, 800);
+            } catch (e) { alert("Hafıza Doldu!"); }
+        }
+
+        // --- 🔄 SENKRONİZASYON ---
+        window.addEventListener('storage', () => {
+            db = JSON.parse(localStorage.getItem(DB_KEY)) || { tasks: [], subs: [], scores: {}, users: [] };
+            if (currentUser) {
+                if (currentUser.role === 'student') renderStudent();
+                else if (currentUser.role === 'teacher') renderTeacher(currentTeacherView);
+            }
+        });
+
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+        // --- 🖼️ GÖRSEL MODAL ---
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            modalImg.src = imageSrc;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Scroll'u engelle
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; // Scroll'u geri aç
+        }
+
+        // ESC tuşu ile modal'ı kapat
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
+
+</body>
+
+</html>
